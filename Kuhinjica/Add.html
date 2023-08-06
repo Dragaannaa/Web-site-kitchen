@@ -1,0 +1,278 @@
+<html>
+  <head>
+    <title>Kuhinjica</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  
+  </head>
+    <body>
+    
+    
+    <div class="bg-img">
+      <div class="container">
+        <div class="topnav">
+          <a href="Home.html">Početna</a>
+          <a href="Add.html">Dodaj recepat</a>
+          <a href="Aboutcooking.html">Zanimljivosti</a>
+          <a href="About1.html">Savjeti</a>
+          <a href="pretraga.html">Pretrazite recepte</a>
+          <button type="submit" class="container" id="signout">Sign Out</button>
+          
+        
+      </div>
+      </div>
+    </div>
+    
+    <br/>
+    <br/>
+    <div>
+      
+      <div id="search-container">
+        <input type="text" id="search-input" placeholder="Pretrazite recepat po nazivu" oninput="searchRecipes(this.value)">
+      </div>
+      
+      <div id="container">
+        <div id="search-container">
+          <input type="text" id="search-input" placeholder="Search recipe by name" oninput="searchRecipes(this.value)">
+        </div>
+      </div>
+      
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-auth.js"></script>
+  <script src="app-2.js"></script>
+    
+    <script>
+
+let recipes = JSON.parse(localStorage.getItem('recipes')) || [];
+
+const containerDiv = document.getElementById('container');
+const searchInput = document.getElementById('search-input');
+
+const showAddRecipeForm = () => {
+  containerDiv.innerHTML = `<form  onsubmit="addRecipe(event)" id="recipe-form">
+                              <input type="text" placeholder="Naziv" id="recipe-name-input" required>
+                              <textarea placeholder="Sastojci" id="recipe-ingredients-input" required></textarea>
+                              <textarea placeholder="Način" id="recipe-method-input" required></textarea>
+                              <input type="submit" id="submit-button" value="Dodaj recept">
+                            </form>`;
+};
+
+const showRecipes = () => {
+  let recipesHtml = '';
+  recipes.forEach((recipe, index) => {
+    recipesHtml += `<div class="polje">
+                      <h3>${recipe.name}</h3>
+                      <p><strong>Sastojci:</strong></p>
+                      <ul>
+                        ${recipe.ingredients.map(ingr => `<li>${ingr}</li>`).join('')}
+                      </ul>
+                      <p><strong>Način:</strong></p>
+                      <p>${recipe.method}</p>
+                      <button onclick="showRecipe(${index})">Prikaži</button>
+                      <button onclick="deleteRecipe(${index})">Izbriši</button>
+                    </div>`;
+  });
+
+  recipesHtml += `<button class="dugme" onclick="showAddRecipeForm()">Dodaj recepat</button>`;
+
+  containerDiv.innerHTML = recipesHtml;
+};
+
+const addRecipe = (event) => {
+  event.preventDefault();
+
+  const recipeName = document.getElementById('recipe-name-input').value.trim();
+  const recipeIngredients = document.getElementById('recipe-ingredients-input').value.trim().split(',').map(i => i.trim());
+  const recipeMethod = document.getElementById('recipe-method-input').value.trim();
+
+  if (recipeName !== '' && recipeIngredients.length > 0 && recipeMethod !== '') {
+    const newRecipe = {
+      name: recipeName,
+      ingredients: recipeIngredients,
+      method: recipeMethod
+    };
+
+    recipes.push(newRecipe);
+    localStorage.setItem('recipes', JSON.stringify(recipes));
+
+    showRecipes();
+  }
+};
+
+const deleteRecipe = (recipeIndex) => {
+  recipes.splice(recipeIndex, 1);
+  localStorage.setItem('recipes', JSON.stringify(recipes));
+  showRecipes();
+};
+
+const showRecipe = (recipeIndex) => {
+  const recipe = recipes[recipeIndex];
+
+  const recipeHtml = `<div class="polje">
+                        <h3>${recipe.name}</h3>
+                        <p><strong>Sastojci:</strong></p>
+                        <ul>
+                          ${recipe.ingredients.map(ingr => `<li>${ingr}</li>`).join('')}
+                        </ul>
+                        <p><strong>Način:</strong></p>
+                        <p>${recipe.method}</p>
+                        <button onclick="showRecipes()">Nazad</button>
+                      </div>`;
+
+  containerDiv.innerHTML = recipeHtml;
+};
+
+const searchRecipes = (query) => {
+  const filteredRecipes = recipes.filter(recipe => {
+    return recipe.name.toLowerCase().includes(query.toLowerCase());
+  });
+
+  let recipesHtml = '';
+  filteredRecipes.forEach((recipe, index) => {
+    recipesHtml += `<div class="polje">
+                      <h3>${recipe.name}</h3>
+                      <p><strong>Sastojci</strong></p>
+                      <ul>
+                        ${recipe.ingredients.map(ingr => `<li>${ingr}</li>`).join('')}
+                      </ul>
+                      <p><strong>Način:</strong></p>
+                      <p>${recipe.method}</p>
+                      <button onclick="showRecipe(${index})">Prikaži</button>
+                      <button onclick="deleteRecipe(${index})">Izbriši</button>
+                    </div>`;
+  });
+
+  if (query === '') {
+    showRecipes();
+  } else {
+    containerDiv.innerHTML = recipesHtml;
+  }
+};
+
+// Prikazujemo sve recepte pri prvom učitavanju stranice
+showRecipes();
+
+
+    </script>
+    <style>
+
+.polje {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: inline-block;
+  width: calc(50% - 10px); /* Polovina širine roditeljskog elementa minus margine */
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .polje {
+    width: 100%; /* Na manjim ekranima, kartice će se prikazivati jedna ispod druge */
+  }
+}
+
+#search-input {
+  width: 20%;
+  padding: 10px;
+  font-size: 16px;
+}
+.dugme{
+  background-color: #cc99b9;
+}
+
+.recipe.show {
+  display: block;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.recipe.hide {
+  display: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+  .recipe h3 {
+    margin-top: 0;
+    font-size: 18px;
+  }
+  
+  .recipe ul {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding-left: 20px;
+  }
+  
+  .recipe button {
+    background-color: #8258b7;
+    color: #c86d6d;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  /* Stilizacija obrasca za dodavanje recepta */
+  #recipe-form {
+    margin-bottom: 10px;
+  }
+  
+  #recipe-form input,
+  #recipe-form textarea {
+    display: block;
+    width: 50%;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  #recipe-form input[type="submit"] {
+    background-color: #54c1d4;
+    color: #1a4435;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .recipe {
+  box-sizing: 50px;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #c26767b8;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.recipe.active {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.recipe h3 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.recipe ul {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  padding-left: 20px;
+}
+
+.recipe button {
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.recipe.show {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.recipe.hide {
+  display: none;
+}
+    </style>
+
+</body>
+</html>

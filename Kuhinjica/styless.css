@@ -1,0 +1,73 @@
+
+  
+  h1 {
+    text-align: center;
+  }
+  
+  input[type="text"] {
+    width: 20%;
+    background-image: linear-gradient(79deg, #f0c889, #f0e893 48%, #ebf6eb);
+    color: #fff;
+    padding: 10px;
+    font-size: 16px;
+    border: 3px solid #191515;
+    border-radius: 20px;
+  }
+  body {
+    background-color: rgb(242, 231, 166);
+  }
+  
+  #recipe-container {
+    margin-top: 20px;
+  }
+  
+  #recipe-container h2 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  #recipe-container img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    border-radius: 5px;
+  }
+  
+  #recipe-container p {
+    text-align: justify;
+  }
+  
+  .error-message {
+    color: red;
+  }
+  
+  /* Dodatni stilovi za prikaz recepata u horizontalnom rasporedu */
+  .recipe-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #c99595;
+    border-radius: 5px;
+  }
+  
+  .recipe-card img {
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    border-radius: 5px;
+  }
+  
+  .recipe-card h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .recipe-card p {
+    margin-top: 5px;
+  }
+  .pretraga {
+    font-family: Arial, sans-serif;
+  }
+  
